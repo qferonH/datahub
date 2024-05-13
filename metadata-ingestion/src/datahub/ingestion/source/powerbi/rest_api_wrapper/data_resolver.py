@@ -70,6 +70,14 @@ class DataResolverBase(ABC):
             client_credential=client_secret,
             authority=DataResolverBase.AUTHORITY + tenant_id,
         )
+        # self.__az_identity_client = CertificateCredential(authority = 'https://login.microsoftonline.com/',
+        #                                                 tenant_id = tenant_id,
+        #                                                 client_id = client_id,
+        #                                                 certificate_path=CERTIFICATE_PATH,
+        #                                                 #certificate_data=certificate_data
+        #                                                 password=PASSWORD,
+        #                                                 connection_verify=False
+        #                                                 )
         self.get_access_token()
 
         logger.info("Connected to {}".format(self._get_authority_url()))
@@ -138,6 +146,10 @@ class DataResolverBase(ABC):
         auth_response = self.__msal_client.acquire_token_for_client(
             scopes=[DataResolverBase.SCOPE]
         )
+        # auth_response = self.__az_identity_client.get_token(
+        #     scopes=[DataResolverBase.SCOPE]
+        # )
+
 
         if not auth_response.get(Constant.ACCESS_TOKEN):
             logger.warning(

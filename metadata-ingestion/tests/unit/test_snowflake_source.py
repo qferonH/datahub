@@ -416,9 +416,9 @@ def test_test_connection_capability_all_success(mock_connect):
             return [
                 ["", "USAGE", "DATABASE", "SNOWFLAKE"],
                 ["", "USAGE", "SCHEMA", "ACCOUNT_USAGE"],
-                ["", "USAGE", "VIEW", "SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY"],
-                ["", "USAGE", "VIEW", "SNOWFLAKE.ACCOUNT_USAGE.ACCESS_HISTORY"],
-                ["", "USAGE", "VIEW", "SNOWFLAKE.ACCOUNT_USAGE.OBJECT_DEPENDENCIES"],
+                ["", "USAGE", "VIEW", "wwselc_db_sfk_datamanagement_prd.share.QUERY_HISTORY"],
+                ["", "USAGE", "VIEW", "wwselc_db_sfk_datamanagement_prd.share.ACCESS_HISTORY"],
+                ["", "USAGE", "VIEW", "wwselc_db_sfk_datamanagement_prd.share.OBJECT_DEPENDENCIES"],
             ]
         raise ValueError(f"Unexpected query: {query}")
 

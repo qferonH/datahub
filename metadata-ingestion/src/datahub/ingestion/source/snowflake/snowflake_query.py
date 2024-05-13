@@ -182,7 +182,7 @@ class SnowflakeQuery:
         object_name AS "OBJECT_NAME",
         column_name AS "COLUMN_NAME",
         domain as "DOMAIN"
-        FROM snowflake.account_usage.tag_references
+        FROM wwselc_db_sfk_datamanagement_prd.share.tag_references
         WHERE (object_database = '{db_name}' OR object_name = '{db_name}')
         AND domain in {allowed_object_domains}
         AND object_deleted IS NULL;
@@ -326,16 +326,16 @@ class SnowflakeQuery:
             users.email AS "EMAIL",
             query_history.role_name AS "ROLE_NAME"
         FROM
-            snowflake.account_usage.access_history access_history
+            wwselc_db_sfk_datamanagement_prd.share.access_history access_history
         LEFT JOIN
             (
-                SELECT * FROM snowflake.account_usage.query_history
+                SELECT * FROM wwselc_db_sfk_datamanagement_prd.share.query_history
                 WHERE query_history.start_time >= to_timestamp_ltz({start_time_millis}, 3)
                     AND query_history.start_time < to_timestamp_ltz({end_time_millis}, 3)
             ) query_history
             ON access_history.query_id = query_history.query_id
         LEFT JOIN
-            snowflake.account_usage.users users
+            wwselc_db_sfk_datamanagement_prd.share.users users
             ON access_history.user_name = users.name
         WHERE query_start_time >= to_timestamp_ltz({start_time_millis}, 3)
             AND query_start_time < to_timestamp_ltz({end_time_millis}, 3)
@@ -361,7 +361,7 @@ class SnowflakeQuery:
                 w.value:"columns" AS downstream_table_columns,
                 t.query_start_time AS query_start_time
             FROM
-                (SELECT * from snowflake.account_usage.access_history) t,
+                (SELECT * from wwselc_db_sfk_datamanagement_prd.share.access_history) t,
                 lateral flatten(input => t.DIRECT_OBJECTS_ACCESSED) r,
                 lateral flatten(input => t.OBJECTS_MODIFIED) w
             WHERE r.value:"objectId" IS NOT NULL
@@ -398,7 +398,7 @@ class SnowflakeQuery:
           ) AS "DOWNSTREAM_VIEW",
           referencing_object_domain AS "REFERENCING_OBJECT_DOMAIN"
         FROM
-          snowflake.account_usage.object_dependencies
+          wwselc_db_sfk_datamanagement_prd.share.object_dependencies
         WHERE
           referencing_object_domain in ('VIEW', 'MATERIALIZED VIEW')
         """
@@ -424,7 +424,7 @@ class SnowflakeQuery:
               SELECT
                 *
               FROM
-                snowflake.account_usage.access_history
+                wwselc_db_sfk_datamanagement_prd.share.access_history
             ) t,
             lateral flatten(input => t.DIRECT_OBJECTS_ACCESSED) vu,
             lateral flatten(input => t.OBJECTS_MODIFIED) w
@@ -500,7 +500,7 @@ class SnowflakeQuery:
           ) AS "DOWNSTREAM_TABLE_NAME",
           ANY_VALUE(referencing_object_domain) AS "DOWNSTREAM_TABLE_DOMAIN"
         FROM
-          snowflake.account_usage.object_dependencies
+          wwselc_db_sfk_datamanagement_prd.share.object_dependencies
         WHERE
           referencing_object_domain in ('VIEW', 'MATERIALIZED VIEW')
         GROUP BY
@@ -530,7 +530,7 @@ class SnowflakeQuery:
                 '.', h.table_name
             ) AS "DOWNSTREAM_TABLE_NAME"
         FROM
-            snowflake.account_usage.copy_history h
+            wwselc_db_sfk_datamanagement_prd.share.copy_history h
         WHERE h.status in ('Loaded','Partially loaded')
             AND DOWNSTREAM_TABLE_NAME IS NOT NULL
             AND h.last_load_time >= to_timestamp_ltz({start_time_millis}, 3)
@@ -545,7 +545,7 @@ class SnowflakeQuery:
             select
                 min(query_start_time) as "MIN_TIME",
                 max(query_start_time) as "MAX_TIME"
-            from snowflake.account_usage.access_history
+            from wwselc_db_sfk_datamanagement_prd.share.access_history
         """
 
     @staticmethod
@@ -593,9 +593,9 @@ class SnowflakeQuery:
                         NVL(USERS.email, CONCAT(LOWER(user_name), '{email_domain}')) AS user_email,
                         {objects_column}
                     from
-                        snowflake.account_usage.access_history
+                        wwselc_db_sfk_datamanagement_prd.share.access_history
                     LEFT JOIN
-                        snowflake.account_usage.users USERS
+                        wwselc_db_sfk_datamanagement_prd.share.users USERS
                         ON user_name = users.name
                     WHERE
                         query_start_time >= to_timestamp_ltz({start_time_millis}, 3)
@@ -657,7 +657,7 @@ class SnowflakeQuery:
             FROM
                 object_access_history
                 LEFT JOIN
-                    snowflake.account_usage.users users
+                    wwselc_db_sfk_datamanagement_prd.share.users users
                     ON user_name = users.name
             GROUP BY
                 bucket_start_time,
@@ -676,7 +676,7 @@ class SnowflakeQuery:
                 object_access_history access_history
             LEFT JOIN
                 (
-                    SELECT * FROM snowflake.account_usage.query_history
+                    SELECT * FROM wwselc_db_sfk_datamanagement_prd.share.query_history
                     WHERE query_history.start_time >= to_timestamp_ltz({start_time_millis}, 3)
                         AND query_history.start_time < to_timestamp_ltz({end_time_millis}, 3)
                 ) query_history
@@ -782,7 +782,7 @@ class SnowflakeQuery:
                 t.query_start_time AS query_start_time,
                 t.query_id AS query_id
             FROM
-                (SELECT * from snowflake.account_usage.access_history) t,
+                (SELECT * from wwselc_db_sfk_datamanagement_prd.share.access_history) t,
                 lateral flatten(input => t.DIRECT_OBJECTS_ACCESSED) r,
                 lateral flatten(input => t.OBJECTS_MODIFIED) w,
                 lateral flatten(input => w.value : "columns", outer => true) wcols,
@@ -873,7 +873,7 @@ class SnowflakeQuery:
             select qid.downstream_table_name, qid.query_id, query_history.query_text, query_history.start_time
             from  query_ids qid
             LEFT JOIN (
-                SELECT * FROM snowflake.account_usage.query_history
+                SELECT * FROM wwselc_db_sfk_datamanagement_prd.share.query_history
                 WHERE query_history.start_time >= to_timestamp_ltz({start_time_millis}, 3)
                     AND query_history.start_time < to_timestamp_ltz({end_time_millis}, 3)
             ) query_history
@@ -942,7 +942,7 @@ class SnowflakeQuery:
                 t.query_start_time AS query_start_time,
                 t.query_id AS query_id
             FROM
-                (SELECT * from snowflake.account_usage.access_history) t,
+                (SELECT * from wwselc_db_sfk_datamanagement_prd.share.access_history) t,
                 lateral flatten(input => t.DIRECT_OBJECTS_ACCESSED) r,
                 lateral flatten(input => t.OBJECTS_MODIFIED) w
             WHERE
@@ -976,7 +976,7 @@ class SnowflakeQuery:
             select qid.downstream_table_name, qid.query_id, query_history.query_text, query_history.start_time
             from  query_ids qid
             LEFT JOIN (
-                SELECT * FROM snowflake.account_usage.query_history
+                SELECT * FROM wwselc_db_sfk_datamanagement_prd.share.query_history
                 WHERE query_history.start_time >= to_timestamp_ltz({start_time_millis}, 3)
                     AND query_history.start_time < to_timestamp_ltz({end_time_millis}, 3)
             ) query_history

@@ -108,9 +108,9 @@ class SnowflakeLineageExtractor(
     Extracts Lineage from Snowflake.
     Following lineage edges are considered.
 
-    1. "Table to View" lineage via `snowflake.account_usage.object_dependencies` view + View definition SQL parsing.
-    2. "S3 to Table" lineage via `show external tables` query and `snowflake.account_usage.copy_history view.
-    3. "View to Table" and "Table to Table" lineage via `snowflake.account_usage.access_history` view (requires Snowflake Enterprise Edition or above)
+    1. "Table to View" lineage via `wwselc_db_sfk_datamanagement_prd.share.object_dependencies` view + View definition SQL parsing.
+    2. "S3 to Table" lineage via `show external tables` query and `wwselc_db_sfk_datamanagement_prd.share.copy_history view.
+    3. "View to Table" and "Table to Table" lineage via `wwselc_db_sfk_datamanagement_prd.share.access_history` view (requires Snowflake Enterprise Edition or above)
 
     Edition Note - Snowflake Standard Edition does not have Access History Feature.
     So it does not support lineage extraction for point 3 edges mentioned above.
@@ -192,7 +192,7 @@ class SnowflakeLineageExtractor(
     def populate_table_upstreams(self, discovered_tables: List[str]) -> None:
         if self.report.edition == SnowflakeEdition.STANDARD:
             # TODO: use sql_aggregator.add_observed_query to report queries from
-            # snowflake.account_usage.query_history and let Datahub generate lineage, usage and operations
+            # wwselc_db_sfk_datamanagement_prd.share.query_history and let Datahub generate lineage, usage and operations
             logger.info(
                 "Snowflake Account is Standard Edition. Table to Table and View to Table Lineage Feature is not supported."
             )  # See Edition Note above for why

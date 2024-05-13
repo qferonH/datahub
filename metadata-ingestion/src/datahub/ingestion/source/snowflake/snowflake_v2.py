@@ -430,7 +430,7 @@ class SnowflakeV2Source(
                         capable=True
                     )
 
-                    if privilege.object_name.startswith("SNOWFLAKE.ACCOUNT_USAGE."):
+                    if privilege.object_name.startswith("wwselc_db_sfk_datamanagement_prd.share."):
                         # if access to "snowflake" shared database, access to all account_usage views is automatically granted
                         # Finer access control is not yet supported for shares
                         # https://community.snowflake.com/s/article/Error-Granting-individual-privileges-on-imported-database-is-not-allowed-Use-GRANT-IMPORTED-PRIVILEGES-instead
